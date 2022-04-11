@@ -9,7 +9,10 @@
         <button class="btn btn-primary" type="submit">Add</button>
       </div>
     </form>
-    {{ todos }}
+
+    <div v-for="{ id, title } in todos" :key="id" class="card mt-2">
+      <div class="card-body p-2">{{ title }}</div>
+    </div>
   </div>
 </template>
 
@@ -19,7 +22,9 @@ import { ref } from 'vue';
 export default {
   setup() {
     const todo = ref('');
-    const todos = ref([]);
+    const todos = ref([
+      { id: Date.now(), title: 'Sample Todo' }
+    ]);
 
     const onSubmit = () => {
       todos.value.push({
