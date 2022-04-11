@@ -5,8 +5,8 @@
 </template>
 
 <script>
-import TextInput from './views/TextInput';
-import RefAndReactive from './views/RefAndReactive'
+import TextInput from './examples/TextInput';
+import RefAndReactive from './examples/RefAndReactive'
 
 export default {
 
