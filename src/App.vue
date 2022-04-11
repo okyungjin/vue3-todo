@@ -1,5 +1,5 @@
 <template>
-  <h1>Ref & Reactive</h1>
+
   <RefAndReactive></RefAndReactive>
   <TextInput></TextInput>
 </template>

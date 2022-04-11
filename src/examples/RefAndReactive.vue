@@ -1,5 +1,7 @@
 <template>
   <div>
+    <h1>Ref & Reactive</h1>
+
     <p>{{ name }}</p>
     <input type="text" v-model="name">
     <button class="btn btn-primary" @click="updateName">Change Name</button>
