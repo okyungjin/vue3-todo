@@ -2,7 +2,7 @@
   <div class="container">
     <h2 class="mt-2">To-Do List</h2>
     <TodoSimpleForm @add-todo="addTodo"></TodoSimpleForm>
-    <TodoList :todos="todos" @toggle-todo="toggleTodo"></TodoList>
+    <TodoList :todos="todos" @toggle-todo="toggleTodo" @delete-todo="deleteTodo"></TodoList>
   </div>
 </template>
 
