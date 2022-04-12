@@ -7,23 +7,23 @@
 </template>
 
 <script>
-  import { ref } from 'vue';
+import { ref } from 'vue';
 
-  export default {
-    setup() {
-      let name = ref('KyungJin Jung');
+export default {
+  setup() {
+    const name = ref('KyungJin Jung');
 
-      const submitName = () => console.log(name.value);
+    const submitName = () => console.log(name.value);
 
-      const updateName = (evt) => name.value = evt.target.value;
+    const updateName = (evt) => name.value = evt.target.value;
 
-      return {
-        name,
-        submitName,
-        updateName,
-      }
-    }
-  }
+    return {
+      name,
+      submitName,
+      updateName,
+    };
+  },
+};
 </script>
 
 <style scoped>

@@ -24,7 +24,7 @@ export default {
     todos: {
       type: Array,
       required: true,
-    }
+    },
   },
   emits: ['toggle-todo', 'delete-todo'],
   setup(props, { emit }) {
@@ -35,9 +35,9 @@ export default {
     return {
       toggleTodo,
       deleteTodo,
-    }
-  }
-}
+    };
+  },
+};
 </script>
 
 <style scoped>

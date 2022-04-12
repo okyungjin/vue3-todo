@@ -20,6 +20,8 @@ export default {
   setup(props, { emit }) {
     const todo = ref('');
 
+    const hasError = ref(false);
+
     const onSubmit = () => {
       if (!todo.value) {
         hasError.value = true;
@@ -31,18 +33,16 @@ export default {
         title: todo.value,
         done: false,
       });
+
       hasError.value = false;
       todo.value = '';
-    }
-
-    const hasError = ref(false);
+    };
 
     return {
       todo,
       onSubmit,
       hasError,
-    }
-
-  }
-}
+    };
+  },
+};
 </script>

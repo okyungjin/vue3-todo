@@ -23,7 +23,7 @@ import { ref, reactive } from 'vue';
 
 export default {
   setup() {
-    let name = ref('KyungJin Jung');
+    const name = ref('KyungJin Jung');
 
     const reactiveInfo = reactive({
       job: 'developer',
@@ -52,9 +52,9 @@ export default {
       updateName,
       updateReactiveInfo,
       updateRefInfo,
-    }
+    };
   },
-}
+};
 </script>
 
 <style scoped>

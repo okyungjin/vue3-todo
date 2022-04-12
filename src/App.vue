@@ -8,33 +8,35 @@
 
 <script>
 import { ref } from 'vue';
-import TodoSimpleForm from './components/TodoSimpleForm';
-import TodoList from './components/TodoList';
+import TodoSimpleForm from './components/TodoSimpleForm.vue';
+import TodoList from './components/TodoList.vue';
 
 export default {
   setup() {
     const todos = ref([
-      { id: Date.now(), title: 'Sample Todo', done: false }
+      { id: Date.now(), title: 'Sample Todo', done: false },
     ]);
 
     const addTodo = (todo) => todos.value.push(todo);
 
     const deleteTodo = (index) => todos.value.splice(index, 1);
 
-    const toggleTodo = (index) => todos.value[index].done = !todos.value[index].done;
+    const toggleTodo = (index) => {
+      todos.value[index].done = !todos.value[index].done;
+    };
 
     return {
       todos,
       addTodo,
       deleteTodo,
       toggleTodo,
-    }
+    };
   },
   components: {
     TodoSimpleForm,
     TodoList,
-  }
-}
+  },
+};
 </script>
 
 <style>
