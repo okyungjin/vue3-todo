@@ -17,7 +17,7 @@ import { ref } from 'vue';
 
 export default {
   emits: ['add-todo'],
-  setup(props, context) {
+  setup(props, { emit }) {
     const todo = ref('');
 
     const onSubmit = () => {
@@ -26,7 +26,7 @@ export default {
         return;
       }
 
-      context.emit('add-todo', {
+      emit('add-todo', {
         id: Date.now(),
         title: todo.value,
         done: false,
