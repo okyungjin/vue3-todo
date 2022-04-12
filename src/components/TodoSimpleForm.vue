@@ -1,0 +1,47 @@
+<template>
+  <form @submit.prevent="onSubmit"> <!-- modifier directive -->
+    <div class="d-flex">
+      <div class="flex-grow-1 me-2">
+        <input class="form-control" type="text" v-model="todo" placeholder="Type New Todo">
+      </div>
+      <div>
+        <button class="btn btn-primary" type="submit">Add</button>
+      </div>
+    </div>
+    <div class="mt-2" v-show="hasError" style="color: red">This field cannot be empty</div>
+  </form>
+</template>
+
+<script>
+import { ref } from 'vue';
+
+export default {
+  setup(props, context) {
+    const todo = ref('');
+
+    const onSubmit = () => {
+      if (!todo.value) {
+        hasError.value = true;
+        return;
+      }
+
+      context.emit('add-todo', {
+        id: Date.now(),
+        title: todo.value,
+        done: false,
+      });
+      hasError.value = false;
+      todo.value = '';
+    }
+
+    const hasError = ref(false);
+
+    return {
+      todo,
+      onSubmit,
+      hasError,
+    }
+
+  }
+}
+</script>
