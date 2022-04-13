@@ -10,6 +10,8 @@
     <hr />
 
     <TodoSimpleForm @add-todo="addTodo"></TodoSimpleForm>
+    <div>{{ error }}</div>
+
     <TodoList :todos="filteredTodos" @toggle-todo="toggleTodo" @delete-todo="deleteTodo"></TodoList>
   </div>
 </template>
@@ -18,10 +20,12 @@
 import { ref, computed } from 'vue';
 import TodoSimpleForm from './components/TodoSimpleForm.vue';
 import TodoList from './components/TodoList.vue';
+import { postTodo } from '../api';
 
 export default {
   setup() {
     const searchText = ref('');
+    const error = ref('');
 
     const todos = ref([
       { id: Date.now(), title: 'Sample Todo', done: false },
@@ -31,7 +35,16 @@ export default {
       () => todos.value.filter((todo) => todo.title.includes(searchText.value)),
     );
 
-    const addTodo = (todo) => todos.value.push(todo);
+    const addTodo = (todo) => {
+      error.value = '';
+      const newTodo = {
+        title: todo.title,
+        done: todo.done,
+      };
+      postTodo(newTodo)
+        .then(() => todos.value.push(todo))
+        .catch(() => { error.value = 'Error occured'; });
+    };
 
     const deleteTodo = (index) => todos.value.splice(index, 1);
 
@@ -46,6 +59,7 @@ export default {
       addTodo,
       deleteTodo,
       toggleTodo,
+      error,
     };
   },
   components: {
