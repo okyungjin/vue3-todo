@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import TodoSimpleForm from './components/TodoSimpleForm.vue';
 import TodoList from './components/TodoList.vue';
 import {
@@ -60,7 +60,7 @@ export default {
 
     const getTodos = async () => {
       try {
-        const res = await getTodoList(currentPage.value, rowsPerPage);
+        const res = await getTodoList(currentPage.value, rowsPerPage, searchText.value);
         todos.value = res.data;
         numOfTodos.value = parseInt(res.headers['x-total-count'], 10);
       } catch (err) {
@@ -69,6 +69,11 @@ export default {
       }
     };
     getTodos();
+
+    watch(searchText, () => {
+      currentPage.value = 1;
+      getTodos();
+    });
 
     const addTodo = async (todo) => {
       error.value = '';

@@ -2,9 +2,9 @@ import axios from 'axios';
 
 const baseUrl = 'http://localhost:3000';
 
-const getTodoList = (page, limit) => {
+const getTodoList = (page, limit, searchText) => {
   let uri = `${baseUrl}/todos`;
-  if (page) uri += `?_page=${page}&_limit=${limit}`;
+  if (page) uri += `?_page=${page}&_limit=${limit}&title_like=${searchText}`;
   return axios.get(uri);
 };
 
