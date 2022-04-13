@@ -4,7 +4,7 @@ const baseUrl = 'http://localhost:3000';
 
 const getTodoList = (page, limit, searchText) => {
   let uri = `${baseUrl}/todos`;
-  if (page) uri += `?_page=${page}&_limit=${limit}&title_like=${searchText}`;
+  if (page) uri += `?_page=${page}&_limit=${limit}&title_like=${searchText}&_sort=id&_order=desc`;
   return axios.get(uri);
 };
 
