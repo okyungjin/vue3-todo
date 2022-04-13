@@ -12,7 +12,7 @@
     <TodoSimpleForm @add-todo="addTodo"></TodoSimpleForm>
     <div>{{ error }}</div>
 
-    <TodoList :todos="filteredTodos" @toggle-todo="toggleTodo" @delete-todo="deleteTodo"></TodoList>
+    <TodoList :todos="todos" @toggle-todo="toggleTodo" @delete-todo="deleteTodo"></TodoList>
 
     <hr />
     <nav aria-label="Page navigation example">
@@ -47,12 +47,7 @@ export default {
   setup() {
     const searchText = ref('');
     const error = ref('');
-
     const todos = ref([]);
-    const filteredTodos = computed(
-      () => todos.value.filter((todo) => todo.title.includes(searchText.value)),
-    );
-
     const rowsPerPage = 10;
     const currentPage = ref(1);
     const numOfTodos = ref(0);
@@ -70,9 +65,13 @@ export default {
     };
     getTodos();
 
+    let timer = null;
     watch(searchText, () => {
-      currentPage.value = 1;
-      getTodos();
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        currentPage.value = 1;
+        getTodos();
+      }, 500);
     });
 
     const addTodo = async (todo) => {
@@ -140,7 +139,6 @@ export default {
     return {
       getTodos,
       searchText,
-      filteredTodos,
       todos,
       addTodo,
       deleteTodo,
