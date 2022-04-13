@@ -42,7 +42,7 @@ import TodoSimpleForm from './components/TodoSimpleForm.vue';
 import TodoList from './components/TodoList.vue';
 import {
   getTodoList, addTodoItem, deleteTodoItem, patchTodoItem,
-} from '../api';
+} from './api';
 
 export default {
   setup() {
