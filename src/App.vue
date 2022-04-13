@@ -35,15 +35,18 @@ export default {
       () => todos.value.filter((todo) => todo.title.includes(searchText.value)),
     );
 
-    const addTodo = (todo) => {
+    const addTodo = async (todo) => {
       error.value = '';
       const newTodo = {
         title: todo.title,
         done: todo.done,
       };
-      postTodo(newTodo)
-        .then(() => todos.value.push(todo))
-        .catch(() => { error.value = 'Error occured'; });
+      try {
+        await postTodo(newTodo);
+        todos.value.push(todo);
+      } catch (_) {
+        error.value = 'Error occured';
+      }
     };
 
     const deleteTodo = (index) => todos.value.splice(index, 1);
