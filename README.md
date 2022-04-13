@@ -271,12 +271,16 @@ export default {
 </template>
 
 <script>
-const todos = ref([
-  { id: Date.now(), title: 'Sample Todo', done: false }
-]);
+export default {
+  setup() {
+    const todos = ref([
+      { id: Date.now(), title: 'Sample Todo', done: false }
+    ]);
 
-return {
-  todos,
+    return {
+      todos,
+    }
+  }
 }
 </script>
 ```
@@ -327,13 +331,14 @@ props로 받은 `todo.done` 을 `v-model` 로 양방향 바인딩 해주었는�
 
 <script>
 export default {
-  // todos 생략
-
-  const toggleTodo = (index) => todos.value[index].done = !todos.value[index].done;
-
-  return {
-    todos,
-    toggleTodo,
+  setup() {
+    // todos 생략
+    const toggleTodo = (index) => todos.value[index].done = !todos.value[index].done;
+    
+    return {
+      todos,
+      toggleTodo,
+    }
   }
 }
 </script>
@@ -395,7 +400,7 @@ setup() {
 
   watchEffect(() => {
     console.log(currentPage.value);
-  };)
+  });
 
   currentPage.value = 2;
 }
@@ -412,7 +417,7 @@ setup() {
 
   watchEffect(() => {
     console.log(rowsPerPage); // CAUTION
-  };)
+  });
 
   rowsPerPage = 5;
 }
