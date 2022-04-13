@@ -83,7 +83,8 @@ export default {
       };
       try {
         await addTodoItem(newTodo);
-        todos.value.push(todo);
+        currentPage.value = 1;
+        await getTodos();
       } catch (_) {
         error.value = 'Error occured';
       }
@@ -93,7 +94,7 @@ export default {
       const todoId = todos.value[index].id;
       try {
         await deleteTodoItem(todoId);
-        todos.value.splice(index, 1);
+        await getTodos();
       } catch (err) {
         console.error(err);
         error.value = 'Error occured';
