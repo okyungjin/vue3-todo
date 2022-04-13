@@ -1,11 +1,7 @@
 # Table of Contents
 - [Table of Contents](#table-of-contents)
-- [vue3-todo](#vue3-todo)
-  - [Project setup](#project-setup)
-    - [Compiles and hot-reloads for development](#compiles-and-hot-reloads-for-development)
-    - [Compiles and minifies for production](#compiles-and-minifies-for-production)
-    - [Lints and fixes files](#lints-and-fixes-files)
-    - [Customize configuration](#customize-configuration)
+- [About Project](#about-project)
+- [Getting Started](#getting-started)
 - [DEV Notes](#dev-notes)
   - [Fragment](#fragment)
   - [ref, reactive](#ref-reactive)
@@ -21,30 +17,40 @@
     - [부모 컴포넌트 (App.vue)](#부모-컴포넌트-appvue-1)
     - [자식 컴포넌트 (TodoList.vue)](#자식-컴포넌트-todolistvue)
     - [props를 사용할 때 주의점](#props를-사용할-때-주의점)
-# vue3-todo
+  - [json-server](#json-server)
+    - [PUT과 PATCH](#put과-patch)
+  - [watchEffect](#watcheffect)
+  - [watch](#watch)
+    - [ref: 단일 값](#ref-단일-값)
+    - [ref: 복수 값](#ref-복수-값)
+    - [rective: 단일 값](#rective-단일-값)
+    - [reactive: 복수 값](#reactive-복수-값)
 
-## Project setup
+
+# About Project
+Todo App with Vue 3
+
+# Getting Started
+
+**Project setup**
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+**Compiles and hot-reloads for development**
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
+**Compiles and minifies for production**
 ```
 npm run build
 ```
 
-### Lints and fixes files
+**Lints and fixes files**
 ```
 npm run lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
 
 # DEV Notes
 ## Fragment
@@ -366,4 +372,125 @@ export default {
   }
 }  
 </script>
+```
+
+## [json-server](https://www.npmjs.com/package/json-server)
+빠르게 back-end를 prototyping 하거나 mocking 할 때 사용할 수 있는 fake 서버이며, REST API를 지원한다.
+
+아래 명령어로 json-server를 실행할 수 있다.
+```
+json-server --watch database/db.json
+```
+
+### PUT과 PATCH
+**PUT은 데이터 전체를 변경**하는 것이고, **PATCH는 데이터를 부분적으로 변경**한다는 차이점이 있다.
+
+## watchEffect
+`watchEffect` 를 사용하면 ref, reactive, props 변수의 변경을 감지할 수 있다.
+
+`vue` 에서 import 하여 사용할 수 있다.
+```js
+import { watchEffect } from 'vue';
+```
+
+```js
+setup() {
+  const currentPage = ref(1);
+
+  watchEffect(() => {
+    console.log(currentPage.value);
+  };)
+
+  currentPage.value = 2;
+}
+```
+
+**주의**
+단, let 키워드 등으로 선언된 reactive하지 않은 변수는 watchEffect에서 감지할 수 없다.
+
+아래 예시 소스에서 `setup()`이 실행되어도 console에 log가 출력되지 않는다.
+
+```js
+setup() {
+  let rowsPerPage = 10;
+
+  watchEffect(() => {
+    console.log(rowsPerPage); // CAUTION
+  };)
+
+  rowsPerPage = 5;
+}
+```
+
+## watch
+watchEffect와 유사한 watch는 cur, prev 값을 인자로 받을 수 있다.
+`vue` 에서 import 하여 사용할 수 있다.
+```js
+import { watch } from 'vue';
+```
+
+
+### ref: 단일 값
+```js
+setup() {
+  const currentPage = ref(1);
+
+  watch(currentPage, (cur, prev) => {
+    console.log(cur, prev);
+  });
+
+  currentPage.value = 10; // 10 1
+}
+```
+
+### ref: 복수 값
+watch의 첫 번째 param에 배열을 사용하여 복수 개의 값에 대한 변경을 감지할 수 있다.
+
+감지하는 변수 중 하나라도 변경이 있으면 함수가 실행된다. **단, `cur` 과 `prev`의 값이 배열 형태인 것에 주의하자.**
+
+```js
+setup() {
+  const currentPage = ref(1);
+  const numOfTodos = ref(0);
+
+  watch([currentPage, numOfTodos], (cur, prev) => {
+    console.log(cur, prev);
+  });
+
+  currentPage.value = 10; // [10, 0] [1, 0]
+  numOfTodos.value = 20; // [10, 20] [10, 0]
+}
+```
+
+### rective: 단일 값
+`reactive` 는 watch의 첫 번째 param에 `() => user.id` 함수를 넣어 변경을 감지할 수 있다.
+
+```js
+setup() {
+  const user = reactive({ id: '' });
+
+  watch(() => user.id, (cur, prev) => {
+    console.log(cur, prev);
+  });
+
+  user.id = 'kyungjin'; // 'kyungjin' ''
+}
+```
+
+### reactive: 복수 값
+watch의 첫 번째 param에 `() => [user.id, user.pw]` 와 같이 배열을 사용하여 여러 값을 watch 할 수 있다. 
+
+감지하는 변수 중 하나라도 변경이 있으면 함수가 실행된다. **단, `cur` 과 `prev`의 값이 배열 형태인 것에 주의하자.**
+
+```js
+setup() {
+  const user = reactive({ id: '', pw: '' });
+
+  watch(() => [user.id, user.pw], (cur, prev) => {
+    console.log(cur, prev);
+  });
+
+  user.id = 'kyungjin'; // ['kyungjin', ''] ['', '']
+  user.pw = '123456'; // ['kyungjin', '123456'] ['kyungjin', '']
+}
 ```
