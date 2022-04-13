@@ -1,21 +1,35 @@
 <template>
   <div class="container">
     <h2 class="mt-2">To-Do List</h2>
+
+    <input
+      class="form-control mb-2"
+      type="text"
+      v-model="searchText"
+      placeholder="Search">
+    <hr />
+
     <TodoSimpleForm @add-todo="addTodo"></TodoSimpleForm>
-    <TodoList :todos="todos" @toggle-todo="toggleTodo" @delete-todo="deleteTodo"></TodoList>
+    <TodoList :todos="filteredTodos" @toggle-todo="toggleTodo" @delete-todo="deleteTodo"></TodoList>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import TodoSimpleForm from './components/TodoSimpleForm.vue';
 import TodoList from './components/TodoList.vue';
 
 export default {
   setup() {
+    const searchText = ref('');
+
     const todos = ref([
       { id: Date.now(), title: 'Sample Todo', done: false },
     ]);
+
+    const filteredTodos = computed(
+      () => todos.value.filter((todo) => todo.title.includes(searchText.value)),
+    );
 
     const addTodo = (todo) => todos.value.push(todo);
 
@@ -26,6 +40,8 @@ export default {
     };
 
     return {
+      searchText,
+      filteredTodos,
       todos,
       addTodo,
       deleteTodo,
