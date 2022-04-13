@@ -6,7 +6,8 @@
       class="form-control mb-2"
       type="text"
       v-model="searchText"
-      placeholder="Search">
+      placeholder="Search"
+      @keyup.enter="searchTodo">
     <hr />
 
     <TodoSimpleForm @add-todo="addTodo"></TodoSimpleForm>
@@ -74,6 +75,12 @@ export default {
       }, 500);
     });
 
+    const searchTodo = () => {
+      clearTimeout(timer);
+      currentPage.value = 1;
+      getTodos();
+    };
+
     const addTodo = async (todo) => {
       error.value = '';
       const newTodo = {
@@ -137,9 +144,10 @@ export default {
     };
 
     return {
+      todos,
       getTodos,
       searchText,
-      todos,
+      searchTodo,
       addTodo,
       deleteTodo,
       toggleTodo,
