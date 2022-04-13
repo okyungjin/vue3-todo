@@ -2,11 +2,14 @@ import axios from 'axios';
 
 const baseUrl = 'http://localhost:3000';
 
-const getTodos = () => axios.get(`${baseUrl}/todos`);
+const getTodoList = () => axios.get(`${baseUrl}/todos`);
 
-const postTodo = (todo) => axios.post(`${baseUrl}/todos`, todo);
+const addTodoItem = (todo) => axios.post(`${baseUrl}/todos`, todo);
+
+const deleteTodoItem = (todoId) => axios.delete(`${baseUrl}/todos/${todoId}`);
 
 export {
-  getTodos,
-  postTodo,
+  getTodoList,
+  addTodoItem,
+  deleteTodoItem,
 };

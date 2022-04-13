@@ -20,20 +20,30 @@
 import { ref, computed } from 'vue';
 import TodoSimpleForm from './components/TodoSimpleForm.vue';
 import TodoList from './components/TodoList.vue';
-import { postTodo } from '../api';
+import { getTodoList, addTodoItem, deleteTodoItem } from '../api';
 
 export default {
   setup() {
     const searchText = ref('');
     const error = ref('');
 
-    const todos = ref([
-      { id: Date.now(), title: 'Sample Todo', done: false },
-    ]);
+    const todos = ref([]);
 
     const filteredTodos = computed(
       () => todos.value.filter((todo) => todo.title.includes(searchText.value)),
     );
+
+    const getTodos = async () => {
+      try {
+        const res = await getTodoList();
+        todos.value = res.data;
+        console.log(res);
+      } catch (err) {
+        console.error(err);
+        error.value = 'Error occured';
+      }
+    };
+    getTodos();
 
     const addTodo = async (todo) => {
       error.value = '';
@@ -42,20 +52,30 @@ export default {
         done: todo.done,
       };
       try {
-        await postTodo(newTodo);
+        await addTodoItem(newTodo);
         todos.value.push(todo);
       } catch (_) {
         error.value = 'Error occured';
       }
     };
 
-    const deleteTodo = (index) => todos.value.splice(index, 1);
+    const deleteTodo = async (index) => {
+      const todoId = todos.value[index].id;
+      try {
+        await deleteTodoItem(todoId);
+        todos.value.splice(index, 1);
+      } catch (err) {
+        console.error(err);
+        error.value = 'Error occured';
+      }
+    };
 
     const toggleTodo = (index) => {
       todos.value[index].done = !todos.value[index].done;
     };
 
     return {
+      getTodos,
       searchText,
       filteredTodos,
       todos,
