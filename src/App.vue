@@ -70,8 +70,15 @@ export default {
       }
     };
 
-    const toggleTodo = (index) => {
-      todos.value[index].done = !todos.value[index].done;
+    const toggleTodo = async (index) => {
+      const todoId = todos.value[index].id;
+      try {
+        await patchTodoItem(todoId, { done: !todos.value[index].done });
+        todos.value[index].done = !todos.value[index].done;
+      } catch (err) {
+        console.error(err);
+      }
+    };
     };
 
     return {

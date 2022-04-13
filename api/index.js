@@ -8,8 +8,11 @@ const addTodoItem = (todo) => axios.post(`${baseUrl}/todos`, todo);
 
 const deleteTodoItem = (todoId) => axios.delete(`${baseUrl}/todos/${todoId}`);
 
+const patchTodoItem = (todoId, value) => axios.patch(`${baseUrl}/todos/${todoId}`, value);
+
 export {
   getTodoList,
   addTodoItem,
   deleteTodoItem,
+  patchTodoItem,
 };
