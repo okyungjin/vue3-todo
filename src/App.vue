@@ -1,5 +1,8 @@
 <template>
-  <div class="container">
-    <router-view />
-  </div>
+  <NavigationBar></NavigationBar>
+  <router-view />
 </template>
+
+<script setup>
+import NavigationBar from '@/components/NavigationBar.vue';
+</script>
