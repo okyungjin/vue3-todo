@@ -1,7 +1,7 @@
 # Table of Contents
 - [Table of Contents](#table-of-contents)
 - [About Project](#about-project)
-- [Getting Started](#getting-started)
+- [Build Setup](#build-setup)
 - [DEV Notes](#dev-notes)
   - [Fragment](#fragment)
   - [ref, reactive](#ref-reactive)
@@ -30,26 +30,22 @@
 # About Project
 Todo App with Vue 3
 
-# Getting Started
+# Build Setup
+```bash
+# Project setup
+$ npm install
 
-**Project setup**
-```
-npm install
-```
+# Compiles and hot-reloads for development
+$ npm run serve
 
-**Compiles and hot-reloads for development**
-```
-npm run serve
-```
+# Compiles and hot-reloads for development AND start json-server
+$ npm run dev
 
-**Compiles and minifies for production**
-```
-npm run build
-```
+# Compiles and minifies for production
+$ npm run build
 
-**Lints and fixes files**
-```
-npm run lint
+# Lints and fixes files
+$ npm run lint
 ```
 
 # DEV Notes
