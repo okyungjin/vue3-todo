@@ -2,7 +2,11 @@ import axios from 'axios';
 
 const baseUrl = 'http://localhost:3000';
 
-const getTodoList = () => axios.get(`${baseUrl}/todos`);
+const getTodoList = (page, limit) => {
+  let uri = `${baseUrl}/todos`;
+  if (page) uri += `?_page=${page}&_limit=${limit}`;
+  return axios.get(uri);
+};
 
 const addTodoItem = (todo) => axios.post(`${baseUrl}/todos`, todo);
 
