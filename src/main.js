@@ -1,7 +1,11 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
+import Toast from './components/Toast.vue';
 
-createApp(App)
+const app = createApp(App);
+
+app
   .use(router)
+  .component('Toast', Toast)
   .mount('#app');

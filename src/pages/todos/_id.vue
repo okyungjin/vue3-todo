@@ -36,11 +36,11 @@
 
 <script>
 import { useRoute } from 'vue-router';
-import { ref, computed, onUnmounted } from 'vue';
+import { ref, computed } from 'vue';
 import _ from 'lodash';
 
 import { getTodoItem, putTodoItem } from '@/api';
-import Toast from '@/components/Toast.vue';
+import { useToast } from '@/composables/toast';
 
 export default {
   setup() {
@@ -52,26 +52,9 @@ export default {
 
     const loading = ref(true);
 
-    const showToast = ref(false);
-    const toastType = ref('success');
-    const toastMessage = ref('');
-    let toastTimer;
-    const triggerToast = (message, type = 'success') => {
-      toastMessage.value = message;
-      toastType.value = type;
-      showToast.value = true;
-      toastTimer = setTimeout(() => {
-        console.log('timeout');
-        toastMessage.value = '';
-        toastType.value = '';
-        showToast.value = false;
-      }, 3000);
-    };
-
-    onUnmounted(() => {
-      console.log('onUnmounted');
-      clearTimeout(toastTimer);
-    });
+    const {
+      showToast, toastType, toastMessage, triggerToast,
+    } = useToast();
 
     const getTodo = async () => {
       try {
@@ -117,9 +100,6 @@ export default {
       toastMessage,
       toastType,
     };
-  },
-  components: {
-    Toast,
   },
 };
 </script>

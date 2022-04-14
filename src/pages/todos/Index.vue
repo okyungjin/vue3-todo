@@ -31,6 +31,7 @@
       </li>
     </ul>
   </nav>
+  <Toast v-if="showToast" :message="toastMessage" :type="toastType"></Toast>
 </template>
 
 <script>
@@ -40,6 +41,7 @@ import TodoList from '@/components/TodoList.vue';
 import {
   getTodoList, addTodoItem, deleteTodoItem, patchTodoItem,
 } from '@/api';
+import { useToast } from '@/composables/toast';
 
 export default {
   setup() {
@@ -51,14 +53,17 @@ export default {
     const numOfTodos = ref(0);
     const numOfPages = computed(() => Math.ceil(numOfTodos.value / rowsPerPage));
 
+    const {
+      showToast, toastType, toastMessage, triggerToast,
+    } = useToast();
+
     const getTodos = async () => {
       try {
         const res = await getTodoList(currentPage.value, rowsPerPage, searchText.value);
         todos.value = res.data;
         numOfTodos.value = parseInt(res.headers['x-total-count'], 10);
       } catch (err) {
-        console.error(err);
-        error.value = 'Error occured';
+        triggerToast('Error occured', 'danger');
       }
     };
     getTodos();
@@ -89,7 +94,7 @@ export default {
         currentPage.value = 1;
         await getTodos();
       } catch (_) {
-        error.value = 'Error occured';
+        triggerToast('Error occurred!', 'danger');
       }
     };
 
@@ -98,9 +103,8 @@ export default {
       try {
         await deleteTodoItem(todoId);
         await getTodos();
-      } catch (err) {
-        console.error(err);
-        error.value = 'Error occured';
+      } catch (_) {
+        triggerToast('Error occurred!', 'danger');
       }
     };
 
@@ -156,6 +160,9 @@ export default {
       currentPage,
       moveToPrevPage,
       moveToNextPage,
+      showToast,
+      toastMessage,
+      toastType,
     };
   },
   components: {
