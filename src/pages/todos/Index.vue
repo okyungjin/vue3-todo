@@ -1,38 +1,36 @@
 <template>
-  <div class="container">
-    <h2 class="mt-2">To-Do List</h2>
-    <input
-      class="form-control mb-2"
-      type="text"
-      v-model="searchText"
-      placeholder="Search"
-      @keyup.enter="searchTodo">
-    <hr />
+  <h2 class="mt-2">To-Do List</h2>
+  <input
+    class="form-control mb-2"
+    type="text"
+    v-model="searchText"
+    placeholder="Search"
+    @keyup.enter="searchTodo">
+  <hr />
 
-    <TodoSimpleForm @add-todo="addTodo"></TodoSimpleForm>
-    <div>{{ error }}</div>
+  <TodoSimpleForm @add-todo="addTodo"></TodoSimpleForm>
+  <div>{{ error }}</div>
 
-    <TodoList :todos="todos" @toggle-todo="toggleTodo" @delete-todo="deleteTodo"></TodoList>
+  <TodoList :todos="todos" @toggle-todo="toggleTodo" @delete-todo="deleteTodo"></TodoList>
 
-    <hr />
-    <nav aria-label="Page navigation example">
-      <ul class="pagination">
-        <li class="page-item" @click="moveToPrevPage" v-if="currentPage > 1">
-          <a class="page-link pointer">Previous</a>
-        </li>
-        <li v-for="page in numOfPages"
-            :key="page"
-            class="page-item"
-            :class="{ active: currentPage === page }"
-            @click="onPageChange(page)">
-          <a class="page-link pointer">{{ page }}</a>
-        </li>
-        <li class="page-item" @click="moveToNextPage" v-if="currentPage < numOfPages">
-          <a class="page-link pointer">Next</a>
-        </li>
-      </ul>
-    </nav>
-  </div>
+  <hr />
+  <nav aria-label="Page navigation example">
+    <ul class="pagination">
+      <li class="page-item" @click="moveToPrevPage" v-if="currentPage > 1">
+        <a class="page-link pointer">Previous</a>
+      </li>
+      <li v-for="page in numOfPages"
+          :key="page"
+          class="page-item"
+          :class="{ active: currentPage === page }"
+          @click="onPageChange(page)">
+        <a class="page-link pointer">{{ page }}</a>
+      </li>
+      <li class="page-item" @click="moveToNextPage" v-if="currentPage < numOfPages">
+        <a class="page-link pointer">Next</a>
+      </li>
+    </ul>
+  </nav>
 </template>
 
 <script>
