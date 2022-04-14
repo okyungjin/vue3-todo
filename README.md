@@ -33,6 +33,8 @@
     - [input checkbox](#input-checkbox)
   - [$event](#event)
   - [JavaScript 객체 복사 시 주의점](#javascript-객체-복사-시-주의점)
+- [Troubleshooting](#troubleshooting)
+  - [[Vue warn]: Failed to resolve component](#vue-warn-failed-to-resolve-component)
 
 
 # About Project
@@ -657,3 +659,18 @@ console.log(todo.value === originTodo.value); // true
 todo.value = res.data;
 originTodo.value =  { ...res.data };
 ```
+
+# Troubleshooting
+## [Vue warn]: Failed to resolve component
+```
+[Vue warn]: Failed to resolve component: Toast
+If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement. 
+  at <Index onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< undefined > > 
+  at <RouterView> 
+  at <App>
+```
+
+![Failed to resolve component](https://user-images.githubusercontent.com/31913666/163354833-9aba26bf-5ca4-42a3-8d7b-5a095241e468.png)
+
+**해결 방법**
+`import` 혹은 `components` 에 등록하는 것을 누락했을 때 발생하는 warning이므로, 두 사항을 확인해본다.
