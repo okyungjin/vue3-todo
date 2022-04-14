@@ -36,7 +36,7 @@
 
 <script>
 import { useRoute } from 'vue-router';
-import { ref, computed } from 'vue';
+import { ref, computed, onUnmounted } from 'vue';
 import _ from 'lodash';
 
 import { getTodoItem, putTodoItem } from '@/api';
@@ -55,16 +55,23 @@ export default {
     const showToast = ref(false);
     const toastType = ref('success');
     const toastMessage = ref('');
+    let toastTimer;
     const triggerToast = (message, type = 'success') => {
       toastMessage.value = message;
       toastType.value = type;
       showToast.value = true;
-      setTimeout(() => {
+      toastTimer = setTimeout(() => {
+        console.log('timeout');
         toastMessage.value = '';
         toastType.value = '';
         showToast.value = false;
       }, 3000);
     };
+
+    onUnmounted(() => {
+      console.log('onUnmounted');
+      clearTimeout(toastTimer);
+    });
 
     const getTodo = async () => {
       try {
