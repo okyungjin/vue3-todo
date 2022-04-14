@@ -31,13 +31,16 @@
       </div>
     </div>
   </form>
+  <Toast v-if="showToast" :message="toastMessage" :type="toastType"></Toast>
 </template>
 
 <script>
 import { useRoute } from 'vue-router';
-import { getTodoItem, putTodoItem } from '@/api';
 import { ref, computed } from 'vue';
 import _ from 'lodash';
+
+import { getTodoItem, putTodoItem } from '@/api';
+import Toast from '@/components/Toast.vue';
 
 export default {
   setup() {
@@ -49,11 +52,29 @@ export default {
 
     const loading = ref(true);
 
+    const showToast = ref(false);
+    const toastType = ref('success');
+    const toastMessage = ref('');
+    const triggerToast = (message, type = 'success') => {
+      toastMessage.value = message;
+      toastType.value = type;
+      showToast.value = true;
+      setTimeout(() => {
+        toastMessage.value = '';
+        toastType.value = '';
+        showToast.value = false;
+      }, 3000);
+    };
+
     const getTodo = async () => {
-      const res = await getTodoItem(todoId);
-      todo.value = res.data;
-      originTodo.value = { ...res.data };
-      loading.value = false;
+      try {
+        const res = await getTodoItem(todoId);
+        todo.value = res.data;
+        originTodo.value = { ...res.data };
+        loading.value = false;
+      } catch (err) {
+        triggerToast('Error occurred!', 'danger');
+      }
     };
 
     const statusBtnClass = computed(() => (todo.value.done ? 'btn-success' : 'btn-danger'));
@@ -66,8 +87,13 @@ export default {
     const todoUpdated = computed(() => !_.isEqual(todo.value, originTodo.value));
 
     const onSave = async () => {
-      const { data } = await putTodoItem(todoId, todo.value);
-      originTodo.value = { ...data };
+      try {
+        const { data } = await putTodoItem(todoId, todo.value);
+        originTodo.value = { ...data };
+        triggerToast('Successfully saved!');
+      } catch (err) {
+        triggerToast('Error occurred!', 'danger');
+      }
     };
 
     getTodo();
@@ -80,7 +106,13 @@ export default {
       toggleTodoStatus,
       todoUpdated,
       onSave,
+      showToast,
+      toastMessage,
+      toastType,
     };
+  },
+  components: {
+    Toast,
   },
 };
 </script>
