@@ -1,7 +1,9 @@
 <template>
   <h2>To-Do Page</h2>
   <div v-if="loading">Loading...</div>
-  <form v-else>
+  <form
+    v-else
+    @submit.prevent="onSave">
     <div class="row">
       <div class="col-6">
         <div class="form-group mb-2">
@@ -9,7 +11,12 @@
           <input type="text" class="form-control" v-model="todo.title">
         </div>
         <button type="button" class="btn btn-outline-dark">Cancel</button>
-        <button type="submit" class="btn btn-primary ms-2">Save</button>
+        <button
+          type="submit"
+          class="btn btn-primary ms-2"
+          :disabled="!todoUpdated"
+          @click.stop="onSave"
+        >Save</button>
       </div>
       <div class="col-6">
         <div class="form-group">
@@ -28,19 +35,24 @@
 
 <script>
 import { useRoute } from 'vue-router';
-import { getTodoItem } from '@/api';
+import { getTodoItem, putTodoItem } from '@/api';
 import { ref, computed } from 'vue';
+import _ from 'lodash';
 
 export default {
   setup() {
     const route = useRoute();
     const todoId = route.params.id;
+
     const todo = ref(null);
+    const originTodo = ref(null);
+
     const loading = ref(true);
 
     const getTodo = async () => {
       const res = await getTodoItem(todoId);
       todo.value = res.data;
+      originTodo.value = { ...res.data };
       loading.value = false;
     };
 
@@ -51,6 +63,13 @@ export default {
       todo.value.done = !todo.value.done;
     };
 
+    const todoUpdated = computed(() => !_.isEqual(todo.value, originTodo.value));
+
+    const onSave = async () => {
+      const { data } = await putTodoItem(todoId, todo.value);
+      originTodo.value = { ...data };
+    };
+
     getTodo();
 
     return {
@@ -59,6 +78,8 @@ export default {
       statusBtnClass,
       statusBtnLabel,
       toggleTodoStatus,
+      todoUpdated,
+      onSave,
     };
   },
 };

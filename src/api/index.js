@@ -16,10 +16,13 @@ const deleteTodoItem = (todoId) => axios.delete(`${baseUrl}/todos/${todoId}`);
 
 const patchTodoItem = (todoId, value) => axios.patch(`${baseUrl}/todos/${todoId}`, value);
 
+const putTodoItem = (todoId, value) => axios.put(`${baseUrl}/todos/${todoId}`, value);
+
 export {
   getTodoItem,
   getTodoList,
   addTodoItem,
   deleteTodoItem,
   patchTodoItem,
+  putTodoItem,
 };
