@@ -25,6 +25,14 @@
     - [ref: 복수 값](#ref-복수-값)
     - [rective: 단일 값](#rective-단일-값)
     - [reactive: 복수 값](#reactive-복수-값)
+  - [router-link](#router-link)
+    - [params가 없을 경우](#params가-없을-경우)
+    - [params가 있을 경우](#params가-있을-경우)
+  - [이벤트 버블링](#이벤트-버블링)
+    - [button](#button)
+    - [input checkbox](#input-checkbox)
+  - [$event](#event)
+  - [JavaScript 객체 복사 시 주의점](#javascript-객체-복사-시-주의점)
 
 
 # About Project
@@ -494,4 +502,158 @@ setup() {
   user.id = 'kyungjin'; // ['kyungjin', ''] ['', '']
   user.pw = '123456'; // ['kyungjin', '123456'] ['kyungjin', '']
 }
+```
+
+## router-link
+### params가 없을 경우
+`/todos` 로 이동할 경우
+
+```html
+<!-- path로 이동 -->
+<router-link class="navbar-brand mx-4" to="/">KyungJin</router-link>
+
+<!-- name으로 이동 -->
+<router-link class="navbar-brand mx-4" :to="{ name: 'Home'}">KyungJin</router-link>
+```
+### params가 있을 경우
+`/todos/:id` 로 이동할 경우
+```js
+// path로 이동
+router.push(`/todos/${itemId}`);
+
+// name으로 이동
+router.push({
+  name: 'Todo',
+  params: {
+    id: itemId,
+  },
+});
+```
+named route를 사용할 경우 router name이 변경되었을 때 대처가 용이하다. **가급적 named route를 사용하도록 하자.**
+
+## 이벤트 버블링
+Todo 삭제 버튼을 클릭했을 때 `/todo/:id` 로 라우팅 된다. Todos로 돌아가보면 todo item이 삭제가 잘 되어있긴 하다.
+
+![event bubbling](https://user-images.githubusercontent.com/31913666/163294841-177d7f12-5a97-4c7a-be0b-b9d69483bcd1.gif)
+
+이는 이벤트가 위로 전파되는 **이벤트 버블링**이라는 속성 때문에 발생한다.
+
+위의 사례에서 구조는 다음과 같은데,
+```
+card body (@click="moveToPage")
+  ㄴ delete btn (@click="deleteTodo")
+  ㄴ input checkbox (@change="toggleTodo")
+```
+### button
+`deleteTodo` 클릭 이벤트가 발생한 후에 이벤트 버블링에 의해서 이벤트가 상위로 전파되어 `moveToPage` 가 실행되는 것이다.
+
+이벤트 버블링은 `event.stopPropagation()` 으로 막을 수 있다.
+Vue에서는 `@click.stop` 처럼 stop 디렉티브를 사용하면 된다.
+
+```html
+<button class="btn btn-danger btn-sm" @click.stop="deleteTodo(index)">Delete</button>
+```
+소스를 위와 같이 수정하면 정상적으로 delete만 동작한다!
+
+### input checkbox
+delete를 고쳤더니 input checkbox에서도 체크 박스를 누르면 해당 todo item으로 라우팅 되는 현상이 발생한다.
+
+```html
+<input
+  class="form-check-input"
+  type="checkbox"
+  :value="todo.done"
+  @change="toggleTodo(index)"
+>
+```
+
+delete 버튼에서 배운대로 stop 디렉티브를 넣어본다.
+체크박스가 동작하지 않고 그냥 라우팅만 된다.
+
+```html
+<input
+  class="form-check-input"
+  type="checkbox"
+  :value="todo.done"
+  @change.stop="toggleTodo(index)"
+>
+```
+
+`@change` 의 경우에는 `@change.stop` 이 아닌 `@click.stop` 을 추가해주어야 한다.
+
+
+```html
+<input
+  class="form-check-input"
+  type="checkbox"
+  :value="todo.done"
+  @change="toggleTodo(index)"
+  @click.stop
+>
+```
+이제 라우팅 되지 않고 toggle만 정상적으로 동작한다.
+
+- [ ] **읽어보기** [이벤트 버블링, 이벤트 캡처 그리고 이벤트 위임까지](https://joshua1988.github.io/web-development/javascript/event-propagation-delegation/)
+
+
+## $event
+Vue template에서 param으로 발생한 이벤트를 넘겨주고 싶을 때는 `$event` 를 전달해주면 된다.
+
+다른 키워드는 사용할 수 없고 반드시 `$event` 로 기재해야 한다.
+
+```html
+@change="toggleTodo(index, $event)"
+```
+
+대신 인자를 받을 때는 자유롭게 네이밍하면 된다.
+```js
+const toggleTodo = (index, event) => {
+  console.log(event);
+};
+```
+
+## JavaScript 객체 복사 시 주의점
+
+Todo Page에서 값의 변경이 있을 때만 Save가 가능하도록 하는 기능을 구현하였다.
+
+JavaScript 객체의 복사, 비교에 아주 좋은 예시인 것 같다.
+
+`todo` 와 `originTodo` 를 선언하여 `originTodo` 에는 초기 todo 값을 저장한다.
+
+```js
+export default {
+  setup() {
+    const todo = ref(null);
+    const originTodo = ref(null);
+
+    const getTodo = async () => {
+      const res = await getTodoItem(todoId);
+      todo.value = res.data; // here
+      originTodo.value = res.data; // here
+      loading.value = false;
+    };
+  }
+}
+```
+
+주목할 부분은 아래인데,
+```js
+todo.value = res.data;
+originTodo.value = res.data;
+```
+
+`todo.value` 와 `originTodo.value` 에는 `res.data` 객체의 주소 값이 할당되게 된다.
+
+따라서 `===` 연산자로 주소를 비교하면 `true` 가 반환된다.
+```js
+console.log(todo.value === originTodo.value); // true
+```
+
+값은 주소 값을 가리키므로 `todo.value.done = false` 등으로 값을 변경하면 `originTodo.value.done` 의 값이 함께 변경된다.
+
+이를 막기 위해서는 spread operator를 사용하여 `originTodo` 에 새로운 객체를 할당해야 한다.
+
+```js
+todo.value = res.data;
+originTodo.value =  { ...res.data };
 ```
