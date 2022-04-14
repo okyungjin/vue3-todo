@@ -106,11 +106,11 @@ export default {
       }
     };
 
-    const toggleTodo = async (index) => {
+    const toggleTodo = async (index, checked) => {
       const todoId = todos.value[index].id;
       try {
-        await patchTodoItem(todoId, { done: !todos.value[index].done });
-        todos.value[index].done = !todos.value[index].done;
+        await patchTodoItem(todoId, { done: checked });
+        todos.value[index].done = checked;
       } catch (err) {
         console.error(err);
       }
