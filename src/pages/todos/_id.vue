@@ -1,9 +1,7 @@
 <template>
   <h2>To-Do Page</h2>
   <div v-if="loading">Loading...</div>
-  <form
-    v-else
-    @submit.prevent="onSave">
+  <form v-else @submit.prevent>
     <div class="row">
       <div class="col-6">
         <div class="form-group mb-2">

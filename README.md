@@ -35,6 +35,7 @@
   - [JavaScript 객체 복사 시 주의점](#javascript-객체-복사-시-주의점)
 - [Troubleshooting](#troubleshooting)
   - [[Vue warn]: Failed to resolve component](#vue-warn-failed-to-resolve-component)
+  - [onUnmounted에서 clearTimeout을 해도 setTimeout이 실행되는 이슈](#onunmounted에서-cleartimeout을-해도-settimeout이-실행되는-이슈)
 
 
 # About Project
@@ -674,3 +675,58 @@ If this is a native custom element, make sure to exclude it from component resol
 
 **해결 방법**
 `import` 혹은 `components` 에 등록하는 것을 누락했을 때 발생하는 warning이므로, 두 사항을 확인해본다.
+
+## onUnmounted에서 clearTimeout을 해도 setTimeout이 실행되는 이슈
+
+Toast 메세지를 발생시킨 후 해당 컴포넌트가 unmount 되었을 때 clearTimeout을 사용하여 설정된 타이머를 해제하는 기능을 구현하였다.
+
+```js
+let toastTimer;
+  const triggerToast = (message, type = 'success') => {
+    toastMessage.value = message;
+    toastType.value = type;
+    showToast.value = true;
+    toastTimer = setTimeout(() => {
+      console.log('timeout');
+      toastMessage.value = '';
+      toastType.value = '';
+      showToast.value = false;
+    }, 3000);
+  };
+
+  onUnmounted(() => {
+    console.log('onUnmounted');
+    clearTimeout(toastTimer);
+  });
+```
+
+콘솔에 다음과 같이 출력되는 것을 확인할 수 있었는데,
+```
+onUnmounted
+timeout
+```
+
+**이슈 발생 원인**
+원인은 form과 button에서 `onSave()` 를 실행했고, toastTimer의 값이 두 번째 toast의 타이머로 덮어씌워지면서 첫 번째 타이머에 대한 `clearTimeout` 이 실행되지 않는 것이 원인이었다.
+
+```html
+<form v-else @submit.prevent="onSave">
+  <button
+    type="submit"
+    class="btn btn-primary ms-2"
+    :disabled="!todoUpdated"
+    @click.stop="onSave"
+  >Save</button>      
+</form>
+```
+
+form의 `onSave()` 를 삭제하였더니 해당 이슈는 해결되었다.
+
+```html
+<form v-else @submit.prevent="onSave">
+```
+
+**교훈**
+`clearTimeout` 으로 타이머를 삭제해도  `setTimeout` 이 계속 실행된다면, 타이머의 값이 변경되진 않았는지 확인해보자.
+
+
