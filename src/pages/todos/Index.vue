@@ -1,5 +1,9 @@
 <template>
-  <h2 class="mt-2">To-Do List</h2>
+  <div class="d-flex justify-content-between my-3">
+    <h2 class="mt-2">To-Do List</h2>
+    <button class="btn btn-primary" @click="moveToCreateTodo">Create Todo</button>
+  </div>
+
   <input
     class="form-control mb-2"
     type="text"
@@ -7,8 +11,6 @@
     placeholder="Search"
     @keyup.enter="searchTodo">
   <hr />
-
-  <TodoSimpleForm @add-todo="addTodo"></TodoSimpleForm>
   <div>{{ error }}</div>
 
   <TodoList :todos="todos" @toggle-todo="toggleTodo" @delete-todo="deleteTodo"></TodoList>
@@ -36,12 +38,13 @@
 
 <script>
 import { ref, computed, watch } from 'vue';
-import TodoSimpleForm from '@/components/TodoSimpleForm.vue';
+// eslint-disable-next-line import/no-cycle
+import router from '@/router';
 import TodoList from '@/components/TodoList.vue';
 import {
   getTodoList, addTodoItem, deleteTodoItem, patchTodoItem,
 } from '@/api';
-import { useToast } from '@/composables/toast';
+// import { useToast } from '@/composables/toast';
 
 export default {
   setup() {
@@ -53,9 +56,9 @@ export default {
     const numOfTodos = ref(0);
     const numOfPages = computed(() => Math.ceil(numOfTodos.value / rowsPerPage));
 
-    const {
-      showToast, toastType, toastMessage, triggerToast,
-    } = useToast();
+    // const {
+    //   showToast, toastType, toastMessage, triggerToast,
+    // } = useToast();
 
     const getTodos = async () => {
       try {
@@ -63,7 +66,7 @@ export default {
         todos.value = res.data;
         numOfTodos.value = parseInt(res.headers['x-total-count'], 10);
       } catch (err) {
-        triggerToast('Error occured', 'danger');
+        // triggerToast('Error occured', 'danger');
       }
     };
     getTodos();
@@ -94,7 +97,7 @@ export default {
         currentPage.value = 1;
         await getTodos();
       } catch (_) {
-        triggerToast('Error occurred!', 'danger');
+        // triggerToast('Error occurred!', 'danger');
       }
     };
 
@@ -104,7 +107,7 @@ export default {
         await deleteTodoItem(todoId);
         await getTodos();
       } catch (_) {
-        triggerToast('Error occurred!', 'danger');
+        // triggerToast('Error occurred!', 'danger');
       }
     };
 
@@ -144,6 +147,8 @@ export default {
       getTodos();
     };
 
+    const moveToCreateTodo = () => router.push({ name: 'TodoCreate' });
+
     return {
       todos,
       getTodos,
@@ -160,13 +165,13 @@ export default {
       currentPage,
       moveToPrevPage,
       moveToNextPage,
-      showToast,
-      toastMessage,
-      toastType,
+      // showToast,
+      // toastMessage,
+      // toastType,
+      moveToCreateTodo,
     };
   },
   components: {
-    TodoSimpleForm,
     TodoList,
   },
 };
