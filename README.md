@@ -33,6 +33,7 @@
     - [input checkbox](#input-checkbox)
   - [$event](#event)
   - [JavaScript 객체 복사 시 주의점](#javascript-객체-복사-시-주의점)
+  - [router path를 구성할 때 유의점](#router-path를-구성할-때-유의점)
 - [Troubleshooting](#troubleshooting)
   - [[Vue warn]: Failed to resolve component](#vue-warn-failed-to-resolve-component)
   - [onUnmounted에서 clearTimeout을 해도 setTimeout이 실행되는 이슈](#onunmounted에서-cleartimeout을-해도-settimeout이-실행되는-이슈)
@@ -661,6 +662,49 @@ todo.value = res.data;
 originTodo.value =  { ...res.data };
 ```
 
+## router path를 구성할 때 유의점
+router path를 구성할 때 순서에 유의해야 한다.
+
+다음과 같이 path를 구성하면 `/create` 와 `/:id` 모두 접근이 가능하지만
+```js
+const router = createRouter({
+  routes: [
+    // .. 중략
+    {
+      path: '/todos/create',
+      name: 'TodoCreate',
+      component: TodoCreate,
+    },
+    {
+      path: '/todos/:id',
+      name: 'Todo',
+      component: Todo,
+    },
+  ],
+});
+```
+
+다음 예시처럼 `/:id` 가 상위에 위치할 경우, `/create` 는 `/:id` 페이지로 이동하게 된다.
+
+```js
+const router = createRouter({
+  routes: [
+    // .. 중략
+    {
+      path: '/todos/:id',
+      name: 'Todo',
+      component: Todo,
+    },
+    {
+      path: '/todos/create',
+      name: 'TodoCreate',
+      component: TodoCreate,
+    },
+  ],
+});
+```
+
+
 # Troubleshooting
 ## [Vue warn]: Failed to resolve component
 ```
@@ -707,6 +751,7 @@ timeout
 ```
 
 **이슈 발생 원인**
+
 원인은 form과 button에서 `onSave()` 를 실행했고, toastTimer의 값이 두 번째 toast의 타이머로 덮어씌워지면서 첫 번째 타이머에 대한 `clearTimeout` 이 실행되지 않는 것이 원인이었다.
 
 ```html
@@ -727,6 +772,7 @@ form의 `onSave()` 를 삭제하였더니 해당 이슈는 해결되었다.
 ```
 
 **교훈**
+
 `clearTimeout` 으로 타이머를 삭제해도  `setTimeout` 이 계속 실행된다면, 타이머의 값이 변경되진 않았는지 확인해보자.
 
 
