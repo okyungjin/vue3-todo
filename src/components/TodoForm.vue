@@ -6,6 +6,7 @@
         <div class="form-group mb-2">
           <label class="my-2">Title</label>
           <input type="text" class="form-control" v-model="todo.title">
+          <div class="error mt-1" v-if="emptyTitleError">{{ emptyTitleError }}</div>
         </div>
       </div>
 
@@ -102,7 +103,13 @@ export default {
 
     const todoUpdated = computed(() => !_.isEqual(todo.value, originTodo.value));
 
+    const emptyTitleError = ref('');
     const onSave = async () => {
+      if (!todo.value.title) {
+        emptyTitleError.value = 'Title is required.';
+        return;
+      }
+
       try {
         let res;
         const data = {
@@ -120,6 +127,7 @@ export default {
         const toastMsg = `Successfully ${props.editing ? 'updated' : 'created'}!`;
         triggerToast(toastMsg);
         originTodo.value = { ...res.data };
+        // eslint-disable-next-line consistent-return
         return res;
       } catch (err) {
         triggerToast('Error occurred!', 'danger');
@@ -138,6 +146,7 @@ export default {
       statusBtnLabel,
       toggleTodoStatus,
       todoUpdated,
+      emptyTitleError,
       onSave,
       showToast,
       toastMessage,
@@ -148,5 +157,7 @@ export default {
 </script>
 
 <style scoped>
-
+.error {
+  color: red;
+}
 </style>
