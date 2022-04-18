@@ -3,7 +3,9 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Delete Confirm</h5>
+          <h5 class="modal-title" id="exampleModalLabel">
+            <slot name="title">Modal Title</slot>
+          </h5>
           <button
             type="button"
             class="btn-close"
@@ -12,11 +14,10 @@
           ></button>
         </div>
         <div class="modal-body">
-          {{ todoTitle }} 항목을 삭제하시겠습니까?
+          <slot name="body">Modal Body</slot>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" @click="onClose">Close</button>
-          <button type="button" class="btn btn-danger" @click="onDelete">Delete Todo</button>
+          <slot name="footer"></slot>
         </div>
       </div>
     </div>
@@ -26,12 +27,6 @@
 <script>
 
 export default {
-  props: {
-    todoTitle: {
-      type: String,
-      required: true,
-    },
-  },
   setup(_, { emit }) {
     const onClose = () => emit('close');
     const onDelete = () => emit('delete');

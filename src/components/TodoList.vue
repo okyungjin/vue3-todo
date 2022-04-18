@@ -22,10 +22,16 @@
   <teleport to="#modal">
     <Modal
       v-if="showModal"
-      :todoTitle="todoToDelete.title"
       @close="closeModal"
       @delete="deleteTodo"
-    ></Modal>
+    >
+      <template #title>Delete Confirm</template>
+      <template v-slot:body>{{ todoToDelete.title }} 항목을 삭제하시겠습니까?</template>
+      <template #footer>
+        <button type="button" class="btn btn-secondary" @click="closeModal">Close</button>
+        <button type="button" class="btn btn-danger" @click="deleteTodo">Delete Todo</button>
+      </template>
+    </Modal>
   </teleport>
 </template>
 
