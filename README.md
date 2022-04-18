@@ -34,6 +34,9 @@
   - [$event](#event)
   - [JavaScript 객체 복사 시 주의점](#javascript-객체-복사-시-주의점)
   - [router path를 구성할 때 유의점](#router-path를-구성할-때-유의점)
+  - [Toast에 transition 적용하기](#toast에-transition-적용하기)
+  - [slot 사용하기](#slot-사용하기)
+  - [Custom Component에 v-model 사용하기](#custom-component에-v-model-사용하기)
 - [Troubleshooting](#troubleshooting)
   - [[Vue warn]: Failed to resolve component](#vue-warn-failed-to-resolve-component)
   - [onUnmounted에서 clearTimeout을 해도 setTimeout이 실행되는 이슈](#onunmounted에서-cleartimeout을-해도-settimeout이-실행되는-이슈)
@@ -702,6 +705,83 @@ const router = createRouter({
     },
   ],
 });
+```
+## Toast에 transition 적용하기
+Toast에 fade나 slide 같은 애니메이션을 주고 싶을 때 transition을 사용하면 된다.
+```html
+<template>
+  <transition name="slide">
+    <Toast
+      v-if="showToast"
+      :message="toastMessage"
+      :type="toastType"
+    ></Toast>
+  </transition>
+</template>
+
+<script>
+// 생략
+</script>
+
+<style scoped>
+.slide-enter-active,
+.slide-leave-active {
+  transition: all 0.5s ease;
+}
+.slide-enter-from,
+.slide-leave-to {
+  opacity: 0;
+  transform: translateY(-30px);
+}
+.slide-enter-to,
+.slide-leave-from {
+  opacity: 1;
+  transform: translateY(0px);
+}
+</style>
+```
+
+## slot 사용하기
+slot을 사용할 때 `v-slot:slotName` 과 `#slotName` 두 가지 방법을 사용할 수 있다.
+
+```html
+<Modal v-if="showModal" @close="closeModal" @delete="deleteTodo">
+  <template #title>Delete Confirm</template>
+  <template v-slot:body>{{ todoToDelete.title }} 항목을 삭제하시겠습니까?</template>
+  <template #footer>
+    <button type="button" class="btn btn-secondary" @click="closeModal">Close</button>
+    <button type="button" class="btn btn-danger" @click="deleteTodo">Delete Todo</button>
+  </template>
+</Modal>
+
+```
+
+## Custom Component에 v-model 사용하기
+Custom Component에서도 `v-model` 을 사용할 수 있다.
+
+```html
+<!-- CommonInput 사용 -->
+<CommonInput
+  label="Title"
+  required
+  v-model="todo.title"
+></CommonInput>
+```
+
+단, CommonInput.vue에서는 props에 `modelValue` 를 선언해주어야 하며, `update:modelValue` 로 emit 해주어야 한다.
+```js
+export default {
+  props: {
+    modelValue: {
+      // 생략 
+    }
+  },
+  setup(_, { emit }) {
+    const onInputChanged = (value) => {
+      emit('update:modelValue, value);
+    }
+  }
+}
 ```
 
 
