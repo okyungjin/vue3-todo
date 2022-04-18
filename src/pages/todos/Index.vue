@@ -1,5 +1,9 @@
 <template>
-  <h2 class="mt-2">To-Do List</h2>
+  <div class="d-flex justify-content-between my-3">
+    <h2 class="mt-2">To-Do List</h2>
+    <button class="btn btn-primary" @click="moveToCreateTodo">Create Todo</button>
+  </div>
+
   <input
     class="form-control mb-2"
     type="text"
@@ -8,8 +12,8 @@
     @keyup.enter="searchTodo">
   <hr />
 
-  <TodoSimpleForm @add-todo="addTodo"></TodoSimpleForm>
-  <div>{{ error }}</div>
+<!--  <TodoSimpleForm @add-todo="addTodo"></TodoSimpleForm>-->
+<!--  <div>{{ error }}</div>-->
 
   <TodoList :todos="todos" @toggle-todo="toggleTodo" @delete-todo="deleteTodo"></TodoList>
 
@@ -36,12 +40,13 @@
 
 <script>
 import { ref, computed, watch } from 'vue';
-import TodoSimpleForm from '@/components/TodoSimpleForm.vue';
+// import TodoSimpleForm from '@/components/TodoSimpleForm.vue';
 import TodoList from '@/components/TodoList.vue';
 import {
   getTodoList, addTodoItem, deleteTodoItem, patchTodoItem,
 } from '@/api';
 import { useToast } from '@/composables/toast';
+import { useRouter } from 'vue-router';
 
 export default {
   setup() {
@@ -144,6 +149,13 @@ export default {
       getTodos();
     };
 
+    const router = useRouter();
+    const moveToCreateTodo = () => {
+      router.push({
+        name: 'TodoCreate',
+      });
+    };
+
     return {
       todos,
       getTodos,
@@ -163,10 +175,11 @@ export default {
       showToast,
       toastMessage,
       toastType,
+      moveToCreateTodo,
     };
   },
   components: {
-    TodoSimpleForm,
+    // TodoSimpleForm,
     TodoList,
   },
 };
