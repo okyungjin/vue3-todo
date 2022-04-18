@@ -1,12 +1,3 @@
 <template>
-  Home
+  <h1>This is Desktop</h1>
 </template>
-
-<script>
-export default {
-};
-</script>
-
-<style scoped>
-
-</style>
