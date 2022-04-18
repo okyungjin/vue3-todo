@@ -12,9 +12,6 @@
     @keyup.enter="searchTodo">
   <hr />
 
-<!--  <TodoSimpleForm @add-todo="addTodo"></TodoSimpleForm>-->
-<!--  <div>{{ error }}</div>-->
-
   <TodoList :todos="todos" @toggle-todo="toggleTodo" @delete-todo="deleteTodo"></TodoList>
 
   <hr />
@@ -103,8 +100,7 @@ export default {
       }
     };
 
-    const deleteTodo = async (index) => {
-      const todoId = todos.value[index].id;
+    const deleteTodo = async (todoId) => {
       try {
         await deleteTodoItem(todoId);
         await getTodos();

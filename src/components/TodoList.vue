@@ -15,14 +15,22 @@
         <span class="ms-2" :class="{ done: todo.done }">{{ todo.title }}</span>
       </div>
       <div>
-        <button class="btn btn-danger btn-sm" @click.stop="deleteTodo(index)">Delete</button>
+        <button class="btn btn-danger btn-sm" @click.stop="openModal(todo)">Delete</button>
       </div>
     </div>
   </div>
+  <Modal
+    v-if="showModal"
+    :todoTitle="todoToDelete.title"
+    @close="closeModal"
+    @delete="deleteTodo"
+  ></Modal>
 </template>
 
 <script>
 import { useRouter } from 'vue-router';
+import { ref } from 'vue';
+import Modal from '@/components/Modal.vue';
 
 export default {
   props: {
@@ -33,9 +41,26 @@ export default {
   },
   emits: ['toggle-todo', 'delete-todo'],
   setup(props, { emit }) {
+    const showModal = ref(false);
+
+    const todoToDelete = ref(null);
+
+    const openModal = (todo) => {
+      todoToDelete.value = todo;
+      showModal.value = true;
+    };
+
+    const closeModal = () => {
+      todoToDelete.value = null;
+      showModal.value = false;
+    };
+
     const toggleTodo = (index, event) => emit('toggle-todo', index, event.target.checked);
 
-    const deleteTodo = (index) => emit('delete-todo', index);
+    const deleteTodo = () => {
+      emit('delete-todo', todoToDelete.value.id);
+      closeModal();
+    };
 
     const router = useRouter();
     const moveToTodoItem = (itemId) => {
@@ -51,7 +76,14 @@ export default {
       toggleTodo,
       deleteTodo,
       moveToTodoItem,
+      showModal,
+      openModal,
+      closeModal,
+      todoToDelete,
     };
+  },
+  components: {
+    Modal,
   },
 };
 </script>
