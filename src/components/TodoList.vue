@@ -19,12 +19,14 @@
       </div>
     </div>
   </div>
-  <Modal
-    v-if="showModal"
-    :todoTitle="todoToDelete.title"
-    @close="closeModal"
-    @delete="deleteTodo"
-  ></Modal>
+  <teleport to="#modal">
+    <Modal
+      v-if="showModal"
+      :todoTitle="todoToDelete.title"
+      @close="closeModal"
+      @delete="deleteTodo"
+    ></Modal>
+  </teleport>
 </template>
 
 <script>
