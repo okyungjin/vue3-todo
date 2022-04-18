@@ -4,9 +4,12 @@
     <div class="row">
       <div class="col-6">
         <div class="form-group mb-2">
-          <label class="my-2">Title</label>
-          <input type="text" class="form-control" v-model="todo.title">
-          <div class="text-red mt-1" v-if="emptyTitleError">{{ emptyTitleError }}</div>
+          <CommonInput
+            label="Title"
+            :required="true"
+            :initial-value="editing ? todo.title : ''"
+            @input-changed="onTitleChanged"
+          ></CommonInput>
         </div>
       </div>
 
@@ -63,8 +66,10 @@ import _ from 'lodash';
 
 import { getTodoItem, putTodoItem, addTodoItem } from '@/api';
 import { useToast } from '@/composables/toast';
+import CommonInput from './common/CommonInput.vue';
 
 export default {
+  components: { CommonInput },
   props: {
     editing: {
       type: Boolean,
@@ -141,6 +146,8 @@ export default {
       }
     };
 
+    const onTitleChanged = (value) => { todo.value.title = value; };
+
     if (props.editing) {
       getTodo();
     }
@@ -157,6 +164,7 @@ export default {
       showToast,
       toastMessage,
       toastType,
+      onTitleChanged,
     };
   },
 };

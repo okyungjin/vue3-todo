@@ -12,7 +12,6 @@ export const useToast = () => {
     toastType.value = type;
     showToast.value = true;
     toastTimer = setTimeout(() => {
-      console.log('timeout');
       toastMessage.value = '';
       toastType.value = '';
       showToast.value = false;
@@ -20,7 +19,6 @@ export const useToast = () => {
   };
 
   onUnmounted(() => {
-    console.log('onUnmounted');
     clearTimeout(toastTimer);
   });
 
