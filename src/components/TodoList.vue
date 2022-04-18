@@ -2,23 +2,27 @@
   <div v-if="!todos.length" class="mt-2">
     There is nothing to display.
   </div>
-  <div v-for="(todo, index) in todos" :key="todo.id" class="card mt-2">
-    <div class="card-body p-2 d-flex align-items-center pointer" @click="moveToTodoItem(todo.id)">
-      <div class="flex-grow-1">
-        <input
-                class="form-check-input"
-                type="checkbox"
-                :value="todo.done"
-                @change="toggleTodo(index, $event)"
-                @click.stop
-        >
-        <span class="ms-2" :class="{ done: todo.done }">{{ todo.title }}</span>
+
+  <ItemList :items="todos">
+    <template #default="{ item, index }">
+      <div class="card-body p-2 d-flex align-items-center pointer" @click="moveToTodoItem(item.id)">
+        <div class="flex-grow-1">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            :value="item.done"
+            @change="toggleTodo(index, $event)"
+            @click.stop
+          >
+          <span class="ms-2" :class="{ done: item.done }">{{ item.title }}</span>
+        </div>
+        <div>
+          <button class="btn btn-danger btn-sm" @click.stop="openModal(item)">Delete</button>
+        </div>
       </div>
-      <div>
-        <button class="btn btn-danger btn-sm" @click.stop="openModal(todo)">Delete</button>
-      </div>
-    </div>
-  </div>
+    </template>
+  </ItemList>
+
   <teleport to="#modal">
     <Modal
       v-if="showModal"
@@ -39,6 +43,7 @@
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import Modal from '@/components/Modal.vue';
+import ItemList from '@/components/ItemList.vue';
 
 export default {
   props: {
@@ -92,10 +97,7 @@ export default {
   },
   components: {
     Modal,
+    ItemList,
   },
 };
 </script>
-
-<style scoped>
-
-</style>
