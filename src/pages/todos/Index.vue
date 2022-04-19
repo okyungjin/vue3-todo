@@ -32,12 +32,10 @@
       </li>
     </ul>
   </nav>
-  <Toast v-if="showToast" :message="toastMessage" :type="toastType"></Toast>
 </template>
 
 <script>
 import { ref, computed, watch } from 'vue';
-// import TodoSimpleForm from '@/components/TodoSimpleForm.vue';
 import TodoList from '@/components/TodoList.vue';
 import {
   getTodoList, addTodoItem, deleteTodoItem, patchTodoItem,
@@ -55,9 +53,7 @@ export default {
     const numOfTodos = ref(0);
     const numOfPages = computed(() => Math.ceil(numOfTodos.value / rowsPerPage));
 
-    const {
-      showToast, toastType, toastMessage, triggerToast,
-    } = useToast();
+    const { triggerToast } = useToast();
 
     const getTodos = async () => {
       try {
@@ -168,14 +164,10 @@ export default {
       currentPage,
       moveToPrevPage,
       moveToNextPage,
-      showToast,
-      toastMessage,
-      toastType,
       moveToCreateTodo,
     };
   },
   components: {
-    // TodoSimpleForm,
     TodoList,
   },
 };

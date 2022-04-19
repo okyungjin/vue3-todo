@@ -1,27 +1,23 @@
 export default {
   namespaced: true,
   state: {
-    showToast: false,
-    toastMessage: '',
-    toastType: 'success',
+    toasts: [],
   },
   // [mutations]는 항상 동기적으로 동작해야 한다.
   mutations: {
-    UPDATE_TOAST_STATUS(state, payload) {
-      state.showToast = payload;
+    ADD_TOAST(state, aToast) {
+      state.toasts.push(aToast);
     },
-    UPDATE_TOAST_MESSAGE(state, payload) {
-      state.toastMessage = payload;
-    },
-    UPDATE_TOAST_TYPE(state, payload) {
-      state.toastType = payload;
+    REMOVE_TOAST(state) {
+      state.toasts.shift();
     },
   },
   actions: {
     triggerToast({ commit }, { message, type }) {
-      commit('UPDATE_TOAST_MESSAGE', message);
-      commit('UPDATE_TOAST_TYPE', type);
-      commit('UPDATE_TOAST_STATUS', true);
+      commit('ADD_TOAST', { id: Date.now(), message, type });
+      setTimeout(() => {
+        commit('REMOVE_TOAST');
+      }, 5000);
     },
   },
 };

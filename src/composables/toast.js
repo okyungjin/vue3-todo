@@ -5,18 +5,14 @@ import { useStore } from 'vuex';
 export const useToast = () => {
   const { state, dispatch } = useStore();
 
-  const showToast = computed(() => state.toast.showToast);
-  const toastType = computed(() => state.toast.toastType);
-  const toastMessage = computed(() => state.toast.toastMessage);
+  const toasts = computed(() => state.toast.toasts);
 
   const triggerToast = (message, type = 'success') => dispatch('toast/triggerToast', { message, type });
 
   // store.getters['toast/toastMessageWithSmile']
 
   return {
-    showToast,
-    toastType,
-    toastMessage,
+    toasts,
     triggerToast,
   };
 };
