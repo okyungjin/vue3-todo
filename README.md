@@ -51,6 +51,9 @@
     - [TodoForm에서 triggerToast 실행](#todoform에서-triggertoast-실행)
     - [원인](#원인)
     - [해결 방법](#해결-방법)
+  - [Vue3에서 Vuex 설정하고 사용하기](#vue3에서-vuex-설정하고-사용하기)
+    - [Vuex 설정](#vuex-설정)
+    - [Vuex 사용](#vuex-사용)
 - [Troubleshooting](#troubleshooting)
   - [[Vue warn]: Failed to resolve component](#vue-warn-failed-to-resolve-component)
   - [onUnmounted에서 clearTimeout을 해도 setTimeout이 실행되는 이슈](#onunmounted에서-cleartimeout을-해도-settimeout이-실행되는-이슈)
@@ -990,6 +993,60 @@ TodoForm에서 `showToast` 의 값을 변경하여도, App의 `showToast` 가 �
 
 ### 해결 방법
 TodoForm에서 App으로 이벤트를 전달하려면 emit을 사용하거나 Vuex를 사용하여야 한다.
+
+## Vue3에서 Vuex 설정하고 사용하기 
+### Vuex 설정
+
+**store/index.js**
+```js
+import { createStore } from 'vuex';
+
+export default createStore({
+  state: {
+    showToast: false,
+    toastType: 'success',
+    toastMessage: '',
+    toastTimer: null,
+  },
+});
+```
+
+**main.js**
+```js
+import { createApp } from 'vue';
+import App from './App.vue';
+import router from './router';
+import store from './store';  // Vuex Store
+import Toast from './components/Toast.vue';
+
+const app = createApp(App);
+
+app
+  .use(router)
+  .use(store) // Vuex Store
+  .component('Toast', Toast)
+  .mount('#app');
+```
+
+### Vuex 사용
+```html
+<template>
+  <!-- 생략 -->
+</template>
+
+<script>
+import { useStore } from 'vuex';
+
+export default {
+  setup() {
+    const store = useStore(); // or const { state } = useStore();
+    console.log(store.state);
+  }
+}
+</script>
+```
+
+
 
 
 # Troubleshooting
