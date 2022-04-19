@@ -66,6 +66,7 @@ import _ from 'lodash';
 import { getTodoItem, putTodoItem, addTodoItem } from '@/api';
 import { useToast } from '@/composables/toast';
 import CommonInput from './common/CommonInput.vue';
+import route from '../router';
 
 export default {
   components: { CommonInput },
@@ -76,8 +77,8 @@ export default {
     },
   },
   setup(props) {
-    const route = useRoute();
-    const todoId = route.params.id;
+    const router = useRoute();
+    const todoId = router.params.id;
 
     const todo = ref({
       title: '',
@@ -97,7 +98,6 @@ export default {
       try {
         const res = await getTodoItem(todoId);
         todo.value = res.data;
-        console.log(todo.value.title);
         originTodo.value = { ...res.data };
         loading.value = false;
       } catch (err) {
@@ -138,6 +138,8 @@ export default {
         const toastMsg = `Successfully ${props.editing ? 'updated' : 'created'}!`;
         triggerToast(toastMsg);
         originTodo.value = { ...res.data };
+
+        await route.push({ name: 'Todos' });
         // eslint-disable-next-line consistent-return
         return res;
       } catch (err) {
