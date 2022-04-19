@@ -57,9 +57,9 @@ import { ref, computed } from 'vue';
 import _ from 'lodash';
 
 import { getTodoItem, putTodoItem, addTodoItem } from '@/api';
+import { useToast } from '../composables/toast';
 import CommonInput from './common/CommonInput.vue';
 import route from '../router';
-import { useToast } from '../composables/toast';
 
 export default {
   components: { CommonInput },
@@ -83,6 +83,7 @@ export default {
     const loading = ref(false);
 
     const { triggerToast } = useToast();
+    const triggerErrorToast = () => triggerToast('Error occurred!', 'danger');
 
     const getTodo = async () => {
       loading.value = true;
@@ -92,7 +93,7 @@ export default {
         originTodo.value = { ...res.data };
         loading.value = false;
       } catch (err) {
-        triggerToast('Error occurred!', 'danger');
+        await triggerErrorToast();
       }
     };
 
@@ -127,14 +128,14 @@ export default {
           todo.value.body = '';
         }
         const toastMsg = `Successfully ${props.editing ? 'updated' : 'created'}!`;
-        triggerToast(toastMsg);
+        await triggerToast(toastMsg);
         originTodo.value = { ...res.data };
 
         await route.push({ name: 'Todos' });
         // eslint-disable-next-line consistent-return
         return res;
       } catch (err) {
-        triggerToast('Error occurred!', 'danger');
+        await triggerErrorToast();
         throw new Error(err);
       }
     };
@@ -161,22 +162,4 @@ export default {
 </script>
 
 <style scoped>
-.text-red {
-  color: red;
-}
-
-.slide-enter-active,
-.slide-leave-active {
-  transition: all 0.5s ease;
-}
-.slide-enter-from,
-.slide-leave-to {
-  opacity: 0;
-  transform: translateY(-30px);
-}
-.slide-enter-to,
-.slide-leave-from {
-  opacity: 1;
-  transform: translateY(0px);
-}
 </style>
