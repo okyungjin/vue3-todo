@@ -49,13 +49,6 @@
 
     </div>
   </form>
-  <transition name="slide">
-    <Toast
-      v-if="showToast"
-      :message="toastMessage"
-      :type="toastType"
-    ></Toast>
-  </transition>
 </template>
 
 <script>
@@ -64,9 +57,9 @@ import { ref, computed } from 'vue';
 import _ from 'lodash';
 
 import { getTodoItem, putTodoItem, addTodoItem } from '@/api';
-import { useToast } from '@/composables/toast';
 import CommonInput from './common/CommonInput.vue';
 import route from '../router';
+import { useToast } from '../composables/toast';
 
 export default {
   components: { CommonInput },
@@ -89,9 +82,7 @@ export default {
 
     const loading = ref(false);
 
-    const {
-      showToast, toastType, toastMessage, triggerToast,
-    } = useToast();
+    const { triggerToast } = useToast();
 
     const getTodo = async () => {
       loading.value = true;
@@ -163,9 +154,6 @@ export default {
       todoUpdated,
       emptyTitleError,
       onSave,
-      showToast,
-      toastMessage,
-      toastType,
       onTitleChanged,
     };
   },
