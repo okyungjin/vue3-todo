@@ -1,17 +1,20 @@
-import { onUnmounted, ref } from 'vue';
+import { onUnmounted, computed } from 'vue';
+import { useStore } from 'vuex';
 
 // eslint-disable-next-line import/prefer-default-export
 export const useToast = () => {
-  const showToast = ref(false);
-  const toastType = ref('success');
-  const toastMessage = ref('');
+  const { state } = useStore();
 
-  let toastTimer;
+  const showToast = computed(() => state.showToast);
+  const toastType = computed(() => state.toastType);
+  const toastMessage = computed(() => state.toastMessage);
+  const toastTimer = computed(() => state.toastTimer);
+
   const triggerToast = (message, type = 'success') => {
     toastMessage.value = message;
     toastType.value = type;
     showToast.value = true;
-    toastTimer = setTimeout(() => {
+    toastTimer.value = setTimeout(() => {
       toastMessage.value = '';
       toastType.value = '';
       showToast.value = false;
@@ -19,7 +22,7 @@ export const useToast = () => {
   };
 
   onUnmounted(() => {
-    clearTimeout(toastTimer);
+    clearTimeout(toastTimer.value);
   });
 
   return {
