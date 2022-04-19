@@ -22,7 +22,7 @@ export default {
     errorMessage: {
       type: String,
     },
-    initialValue: {
+    modelValue: {
       type: String,
       default: '',
     },
@@ -30,7 +30,7 @@ export default {
   setup(props, { emit }) {
     const showErrorMessage = ref(false);
     const displayErrorMessage = `${props.errorMessage ?? `${props.label} is required.`}`;
-    const inputText = ref(props.initialValue);
+    const inputText = ref(props.modelValue);
 
     let timer;
     const onChanged = (evt) => {
@@ -39,7 +39,7 @@ export default {
 
       clearTimeout(timer);
       timer = setTimeout(() => {
-        emit('input-changed', inputText);
+        emit('update:modelValue', inputText);
       }, 500);
     };
 

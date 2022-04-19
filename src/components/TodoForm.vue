@@ -6,9 +6,8 @@
         <div class="form-group mb-2">
           <CommonInput
             label="Title"
-            :required="true"
-            :initial-value="editing ? todo.title : ''"
-            @input-changed="onTitleChanged"
+            required
+            v-model="todo.title"
           ></CommonInput>
         </div>
       </div>
@@ -98,6 +97,7 @@ export default {
       try {
         const res = await getTodoItem(todoId);
         todo.value = res.data;
+        console.log(todo.value.title);
         originTodo.value = { ...res.data };
         loading.value = false;
       } catch (err) {
