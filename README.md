@@ -37,9 +37,24 @@
   - [Toast에 transition 적용하기](#toast에-transition-적용하기)
   - [slot 사용하기](#slot-사용하기)
   - [Custom Component에 v-model 사용하기](#custom-component에-v-model-사용하기)
+  - [v-model로 여러 개의 값을 바인딩하기](#v-model로-여러-개의-값을-바인딩하기)
+  - [[Deprecated] useContext](#deprecated-usecontext)
+    - [1) setup(props, { emit }) 사용](#1-setupprops--emit--사용)
+    - [2) getCurrentInstance 사용](#2-getcurrentinstance-사용)
+  - [toRefs](#torefs)
+    - [사용이 필요한 상황](#사용이-필요한-상황)
+    - [위와 같은 현상이 발생하는 원인](#위와-같은-현상이-발생하는-원인)
+    - [toRefs 사용](#torefs-사용)
+  - [axios baseURL 설정하기](#axios-baseurl-설정하기)
+  - [TodoForm과 App의 showToast는 별개의 값](#todoform과-app의-showtoast는-별개의-값)
+    - [Toast 컴포넌트를 App으로 이동](#toast-컴포넌트를-app으로-이동)
+    - [TodoForm에서 triggerToast 실행](#todoform에서-triggertoast-실행)
+    - [원인](#원인)
+    - [해결 방법](#해결-방법)
 - [Troubleshooting](#troubleshooting)
   - [[Vue warn]: Failed to resolve component](#vue-warn-failed-to-resolve-component)
   - [onUnmounted에서 clearTimeout을 해도 setTimeout이 실행되는 이슈](#onunmounted에서-cleartimeout을-해도-settimeout이-실행되는-이슈)
+  - [Error: TypeError: router.push is not a function](#error-typeerror-routerpush-is-not-a-function)
 
 
 # About Project
@@ -784,6 +799,198 @@ export default {
 }
 ```
 
+## v-model로 여러 개의 값을 바인딩하기
+Vue 3에서는 v-model로 여러 개의 값을 바인딩 할 수 있다.
+`v-model` 과 `v-model:키워드` 로 사용할 수 있다.
+
+```html
+<CommonInput
+  label="Title"
+  required
+  v-model="todo.footer"
+  v-model:title="todo.title"
+  v-model:body="todo.body"
+></CommonInput>
+```
+
+CommonInput에서 emit 해줄때는 아래와 같이 `update:키워드` 를 해주면 된다.
+```js
+emit('update:modelValue', 'emit value');
+emit('update:title', 'emit value');
+emit('update:body', 'emit value');
+```
+
+## [Deprecated] useContext
+`setup()` 에서 props를 사용하지 않고 emit만 사용할 때 useContext를 쓰곤한다. 
+
+```js
+import { useContext } from 'vue';
+
+export default {
+  emits: ['sth-event'], // define emits
+  setup() {
+    const { emit } = useContext();
+    emit('sth-event');
+  }
+}
+```
+**`useContext` 는 deprecated 되었으므로 아래 두 가지 방법 중 하나를 선택하여 사용하도록 하자.**
+
+### 1) setup(props, { emit }) 사용
+예시 코드에서 사용한 `setup(props, { emit })` 을 사용한다.
+### 2) getCurrentInstance 사용
+```js
+import { getCurrentInstance } from 'vue';
+
+export default {
+  emits: ['sth-event'], // define emits
+  setup() {
+    const { emit } = getCurrentInstance();
+    emit('sth-event');
+  }
+}
+```
+
+## toRefs
+
+### 사용이 필요한 상황
+composable API를 이용하여 `useCount` 함수를 생성했다.
+```js
+// composables/count.js
+import { reactive } from 'vue';
+
+export const useCount = () => {
+  const state = reactive({
+    count: 0,
+  });
+  return state;
+};
+```
+
+`useCount` 를 사용하여 `count` 의 값을 증가시키는 버튼을 만들었다.
+하지만 Increment 버튼을 클릭하여도 값은 증가하지 않는다.
+
+```html
+<template>
+  <div>Home</div>
+  <div>{{ count }}</div>
+  <button @click="count++">Increment</button>
+</template>
+
+<script>
+import { useCount } from '../composables/count';
+
+export default {
+  setup() {
+    const { count } = useCount();
+
+    return {
+      count,
+    };
+  },
+};
+</script>
+```
+
+### 위와 같은 현상이 발생하는 원인
+`useCount()` 에서 가져온 `count` 는 primative 타입인 int형이다.
+console에 출력해보면 `0` 인 것을 확인할 수 있다.
+
+```js
+const { count } = useCount();
+console.log(count); // 0
+```
+
+### toRefs 사용
+`state` 를 `toRefs` 로 감싸서 return해주면 reactivity가 연결되어, 버튼을 클릭할 때마다 `count` 의 값이 증가하는 것을 확인할 수 있다.
+
+```js
+// composables/count.js
+import { reactive, toRefs } from 'vue';
+
+export const useCount = () => {
+  const state = reactive({
+    count: 0,
+  });
+  return toRefs(state); // FIXME
+};
+```
+
+## axios baseURL 설정하기
+`src/axios.js`
+
+```js
+import axios from 'axios';
+
+export default axios.create({
+  baseURL: 'http://localhost:3000',
+});
+```
+
+## TodoForm과 App의 showToast는 별개의 값
+TodoForm에서 Save하면 TodoList로 이동해주는 기능을 구현하니, Toast 메세지가 정상적으로 표시되지 않는 이슈가 발생하였다.
+
+이를 해결하기 위해 TodoForm 내부에 있던 Toast 컴포넌트를 App으로 이동하였다.
+
+### Toast 컴포넌트를 App으로 이동
+
+**App.vue**
+```html
+<template>
+  <NavigationBar></NavigationBar>
+  <div class="container">
+    <router-view />
+  </div>
+  <Toast
+    v-if="showToast"
+    :message="toastMessage"
+    :type="toastType"
+  ></Toast>
+</template>
+
+<script>
+import NavigationBar from '@/components/NavigationBar.vue';
+import Toast from '@/components/Toast.vue';
+import { useToast } from './composables/toast';
+
+export default {
+  setup() {
+    const { showToast, toastType, toastMessage } = useToast();
+
+    return {
+      showToast,
+      toastType,
+      toastMessage,
+    };
+  },
+  components: {
+    NavigationBar,
+    Toast,
+  },
+};
+</script>
+```
+
+### TodoForm에서 triggerToast 실행
+그 다음 TodoForm에서 `triggerToast()` 를 실행했다.
+Toast 메세지가 발생할 것을 기대했으나 표시되지 않았다.
+
+```js
+const onSave = () => {
+  // 중략
+  if (error)
+    triggerToast('Error occurred!', 'danger');
+}
+```
+
+### 원인
+Composable 함수를 import 해서 사용할 때 TodoForm에서 사용하는 `useToast()` 와 App에서 사용하는 `useToast()` 는 관련이 없기 때문이다.
+
+TodoForm에서 `showToast` 의 값을 변경하여도, App의 `showToast` 가 변경되는 것이 아니다.
+
+### 해결 방법
+TodoForm에서 App으로 이벤트를 전달하려면 emit을 사용하거나 Vuex를 사용하여야 한다.
+
 
 # Troubleshooting
 ## [Vue warn]: Failed to resolve component
@@ -855,4 +1062,43 @@ form의 `onSave()` 를 삭제하였더니 해당 이슈는 해결되었다.
 
 `clearTimeout` 으로 타이머를 삭제해도  `setTimeout` 이 계속 실행된다면, 타이머의 값이 변경되진 않았는지 확인해보자.
 
+
+
+## Error: TypeError: router.push is not a function
+`useRoute()` 를 사용하여 push 함수를 실행하려고 하니 아래와 같은 오류가 발생했다.
+```
+Error: TypeError: router.push is not a function
+```  
+
+```js
+import { useRoute } from 'vue';
+
+export default {
+  setup() {
+    const router = useRoute();
+    const todoId = router.params.id;
+
+    const onClick = () => {
+      router.push({ name: 'Todos' });
+    };
+  }
+}
+```
+
+**원인**
+push할 때는 `router/index.js` 에서 import한 router 객체를 사용해야 한다.
+
+```js
+import { useRoute } from 'vue';
+import route from '../router';
+
+export default {
+  setup() {
+    // 중략
+    const onClick = () => {
+      route.push({ name: 'Todos' }); // router/index.js에서 import한 route 사용
+    };
+  }
+}
+```
 
