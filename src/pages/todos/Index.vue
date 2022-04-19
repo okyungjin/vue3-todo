@@ -15,43 +15,34 @@
   <TodoList :todos="todos" @toggle-todo="toggleTodo" @delete-todo="deleteTodo"></TodoList>
 
   <hr />
-  <nav aria-label="Page navigation example">
-    <ul class="pagination">
-      <li class="page-item" @click="moveToPrevPage" v-if="currentPage > 1">
-        <a class="page-link pointer">Previous</a>
-      </li>
-      <li v-for="page in numOfPages"
-          :key="page"
-          class="page-item"
-          :class="{ active: currentPage === page }"
-          @click="onPageChange(page)">
-        <a class="page-link pointer">{{ page }}</a>
-      </li>
-      <li class="page-item" @click="moveToNextPage" v-if="currentPage < numOfPages">
-        <a class="page-link pointer">Next</a>
-      </li>
-    </ul>
-  </nav>
+
+  <CommonPagination
+    :totalItemCount="numOfTodos"
+    v-model:currentPage="currentPage"
+  ></CommonPagination>
 </template>
 
 <script>
-import { ref, computed, watch } from 'vue';
+import { ref, watch } from 'vue';
 import TodoList from '@/components/TodoList.vue';
 import {
   getTodoList, addTodoItem, deleteTodoItem, patchTodoItem,
 } from '@/api';
 import { useToast } from '@/composables/toast';
 import { useRouter } from 'vue-router';
+import CommonPagination from '../../components/common/CommonPagination.vue';
 
 export default {
   setup() {
+    const rowsPerPage = 10;
+
     const searchText = ref('');
     const error = ref('');
+
     const todos = ref([]);
-    const rowsPerPage = 10;
-    const currentPage = ref(1);
     const numOfTodos = ref(0);
-    const numOfPages = computed(() => Math.ceil(numOfTodos.value / rowsPerPage));
+
+    const currentPage = ref(1);
 
     const { triggerToast } = useToast();
 
@@ -115,30 +106,20 @@ export default {
       }
     };
 
-    const pageCounts = (totalCounts) => {
-      // eslint-disable-next-line radix
-      let result = parseInt(totalCounts / rowsPerPage);
-      if (result < 0) throw new Error('Length of todo list is not valid.');
-      if (result === 0) return result + 1;
-      if (todos.value.length % rowsPerPage > 0) result += 1;
-      return result;
-    };
+    watch(currentPage, () => getTodos());
 
     const onPageChange = (page) => {
       currentPage.value = page;
-      getTodos();
     };
 
     const moveToPrevPage = () => {
-      if (currentPage.value <= 1) return;
       currentPage.value -= 1;
-      getTodos();
+      // getTodos();
     };
 
     const moveToNextPage = () => {
-      if (currentPage.value >= numOfPages.value) return;
       currentPage.value += 1;
-      getTodos();
+      // getTodos();
     };
 
     const router = useRouter();
@@ -157,17 +138,16 @@ export default {
       deleteTodo,
       toggleTodo,
       error,
-      pageCounts,
-      onPageChange,
       numOfTodos,
-      numOfPages,
+      moveToCreateTodo,
       currentPage,
+      onPageChange,
       moveToPrevPage,
       moveToNextPage,
-      moveToCreateTodo,
     };
   },
   components: {
+    CommonPagination,
     TodoList,
   },
 };
@@ -178,7 +158,5 @@ export default {
     text-decoration: line-through;
     color: grey;
   }
-  .pointer {
-    cursor: pointer;
-  }
+
 </style>
